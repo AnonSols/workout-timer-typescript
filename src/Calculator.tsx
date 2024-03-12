@@ -1,26 +1,44 @@
-import { memo, useState } from "react";
-// import clickSound from "./ClickSound.m4a";
+import { memo, useState, useEffect } from "react";
+import clickSound from "../public/ClickSound.mp3";
 import { useTimer } from "../context/TimerContext";
+import { useSound } from "../context/SoundContext";
 const Calculator = memo(function Calculator() {
   const { workouts } = useTimer();
+  const { allowSound } = useSound();
   const [number, setNumber] = useState(workouts.at(0)?.numExercises);
 
   const [sets, setSets] = useState(3);
 
   const [speed, setSpeed] = useState(90);
   const [durationBreak, setDurationBreak] = useState(5);
+  const [duration, setDuration] = useState(0);
 
-  const duration =
-    (number ? number * sets * speed : 0) / 60 + (sets - 1) * durationBreak;
   const mins = Math.floor(duration);
   const seconds = (duration - mins) * 60;
 
-  // const playSound = function () {
-  //   if (!allowSound) return;
-  //   const sound = new Audio(clickSound);
-  //   sound.play();
-  // };
+  useEffect(() => {
+    setDuration(
+      (number ? number * sets * speed : 0) / 60 + (sets - 1) * durationBreak
+    );
+  }, [sets, speed, durationBreak, number]);
 
+  useEffect(() => {
+    const playSound = function () {
+      if (!allowSound) return;
+      const sound = new Audio(clickSound);
+      sound.play();
+    };
+
+    playSound();
+  }, [duration, allowSound]);
+
+  function handleInc() {
+    setDuration((dura) => Math.floor(dura) + 1);
+  }
+
+  function handleDec() {
+    setDuration((duration) => (duration > 1 ? Math.ceil(duration) - 1 : 0));
+  }
   return (
     <>
       <form>
@@ -70,13 +88,13 @@ const Calculator = memo(function Calculator() {
         </div>
       </form>
       <section>
-        <button onClick={() => {}}>–</button>
+        <button onClick={handleDec}>–</button>
         <p>
           {mins < 10 && "0"}
           {mins}:{seconds < 10 && "0"}
           {seconds}
         </p>
-        <button onClick={() => {}}>+</button>
+        <button onClick={handleInc}>+</button>
       </section>
     </>
   );
