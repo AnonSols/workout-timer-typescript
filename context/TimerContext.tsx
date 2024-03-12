@@ -6,11 +6,21 @@ import {
   useReducer,
 } from "react";
 
-import { REDUCER_ACTION, REDUCER_TYPE } from "../types/model";
+import { REDUCER_TIME_ACTION, REDUCER_TIME_TYPE } from "../types/model";
 
 const InitialState = {
-  allowSound: true,
-  time: formatTime(new Date()),
+  time: "",
+};
+
+type TimerContextProp = {
+  time: string;
+  dispatch: React.Dispatch<REDUCER_TIME_TYPE>;
+  workouts: {
+    name: string;
+    numExercises: number;
+  }[];
+  formatTime: (date: Date) => string;
+  setTime: (id: string) => void;
 };
 
 function formatTime(date: Date) {
@@ -22,19 +32,6 @@ function formatTime(date: Date) {
     second: "2-digit",
   }).format(date);
 }
-
-type TimerContextProp = {
-  time: string;
-  dispatch: React.Dispatch<REDUCER_TYPE>;
-  allowSound: boolean;
-  workouts: {
-    name: string;
-    numExercises: number;
-  }[];
-  formatTime: (date: Date) => string;
-  setTime: (id: string) => void;
-};
-
 const TimerContext = createContext<TimerContextProp | undefined>(undefined);
 
 type TimerProviderProp = {
@@ -45,18 +42,13 @@ function TimerProvider({ children }: TimerProviderProp) {
 
   function reducer(
     state: typeof InitialState,
-    action: REDUCER_TYPE
+    action: REDUCER_TIME_TYPE
   ): typeof InitialState {
     switch (action.type) {
-      case REDUCER_ACTION.TIMER:
+      case REDUCER_TIME_ACTION.TIMER:
         return {
           ...state,
-          time: action.payload,
-        };
-      case REDUCER_ACTION.ALLOWED_SOUND:
-        return {
-          ...state,
-          allowSound: !state.allowSound,
+          time: action.payload ? action.payload : "",
         };
 
       default:
@@ -64,7 +56,7 @@ function TimerProvider({ children }: TimerProviderProp) {
     }
   }
 
-  const [{ time, allowSound }, dispatch] = useReducer(reducer, InitialState);
+  const [{ time }, dispatch] = useReducer(reducer, InitialState);
 
   const partOfDay = time.slice(-2);
 
@@ -94,19 +86,18 @@ function TimerProvider({ children }: TimerProviderProp) {
   }, [partOfDay]);
 
   function setTime(id: string) {
-    dispatch({ type: REDUCER_ACTION.TIMER, payload: id });
+    dispatch({ type: REDUCER_TIME_ACTION.TIMER, payload: id });
   }
 
   const value = useMemo(() => {
     return {
       time,
       dispatch,
-      allowSound,
       workouts,
       formatTime,
       setTime,
     };
-  }, [allowSound, time, workouts]);
+  }, [time, workouts]);
 
   return (
     <TimerContext.Provider value={value}>{children}</TimerContext.Provider>

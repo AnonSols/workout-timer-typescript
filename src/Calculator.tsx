@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 // import clickSound from "./ClickSound.m4a";
 import { useTimer } from "../context/TimerContext";
-
-function Calculator() {
+const Calculator = memo(function Calculator() {
   const { workouts } = useTimer();
   const [number, setNumber] = useState(workouts.at(0)?.numExercises);
 
@@ -81,6 +80,6 @@ function Calculator() {
       </section>
     </>
   );
-}
+});
 
 export default Calculator;

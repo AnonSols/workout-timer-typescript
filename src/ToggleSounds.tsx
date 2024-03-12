@@ -1,15 +1,17 @@
-import { REDUCER_ACTION_TYPE, useTimer } from "../context/TimerContext";
+import { memo } from "react";
+import { useSound } from "../context/SoundContext";
+import { REDUCER_SOUND_ACTION } from "../types/model";
 
-function ToggleSounds() {
-  const { allowSound, dispatch } = useTimer();
+const ToggleSounds = memo(function ToggleSounds() {
+  const { allowSound, dispatch } = useSound();
   return (
     <button
       className="btn-sound"
-      onClick={() => dispatch({ type: REDUCER_ACTION_TYPE.ALLOWED_SOUND })}
+      onClick={() => dispatch({ type: REDUCER_SOUND_ACTION.ALLOWED_SOUND })}
     >
       {allowSound ? "🔈" : "🔇"}
     </button>
   );
-}
+});
 
 export default ToggleSounds;

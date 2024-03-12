@@ -1,11 +1,10 @@
 import { useEffect } from "react";
 import Calculator from "./Calculator";
 import ToggleSounds from "./ToggleSounds";
-import { TimerProvider, useTimer } from "../context/TimerContext";
+import { useTimer } from "../context/TimerContext";
 
 function App() {
-  const { time, formatTime, setTime } = useTimer();
-
+  const { time, setTime, formatTime } = useTimer();
   useEffect(
     function () {
       const id = setInterval(function () {
@@ -18,14 +17,12 @@ function App() {
   );
 
   return (
-    <TimerProvider>
-      <main>
-        <h1>Workout timer</h1>
-        <time>For your workout on {time}</time>
-        <ToggleSounds />
-        <Calculator />
-      </main>
-    </TimerProvider>
+    <main>
+      <h1>Workout timer</h1>
+      <time>For your workout on {time}</time>
+      <ToggleSounds />
+      <Calculator />
+    </main>
   );
 }
 
